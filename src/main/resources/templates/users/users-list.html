@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html
+  lang="pt"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="#{userlist.title}">Os Meus Livros</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  </head>
+  <body>
+    <div>
+      <div th:replace="~{fragments/_header :: page-header}"></div>
+      <main>
+        <div th:if="${userBooks == null or #lists.isEmpty(userBooks)}">
+          <h2 th:text="#{userlist.empty}" class="empty-list-message"></h2>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(userBooks)}">
+          <h2 th:text="#{userlist.title}" class="page-title">Os Meus Livros</h2>
+
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th th:text="#{userlist.header.username}">Username</th>
+                <th th:text="#{userlist.header.publisher}">Publisher</th>
+                <th th:text="#{userlist.header.authors}">Author(s)</th>
+                <th th:text="#{userlist.header.title}">Title</th>
+                <th th:text="#{userlist.header.favorite}">Favorite</th>
+                <th th:text="#{userlist.header.wishlist}">Wishlist</th>
+                <th th:text="#{userlist.header.bucketlist}">Bucketlist</th>
+                <th th:text="#{userlist.header.actions}">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="item : ${userBooks}">
+                <form
+                  th:action="@{/users/{username}/books/{userBookId}(username=${item.username}, userBookId=${item.userBookId})}"
+                  method="post"
+                  class="table-form-row"
+                >
+                  <td th:text="${item.username}"></td>
+                  <td th:text="${item.book.publisher.name}"></td>
+                  <td>
+                    <span
+                      th:text="${#strings.listJoin(item.book.authors.![name], ', ')}"
+                    ></span>
+                  </td>
+                  <td th:text="${item.book.title}"></td>
+                  <td class="cell-center">
+                    <input
+                      type="checkbox"
+                      name="isFavorite"
+                      value="true"
+                      th:checked="${item.isFavorite}"
+                    />
+                  </td>
+                  <td class="cell-center">
+                    <input
+                      type="checkbox"
+                      name="isWishlist"
+                      value="true"
+                      th:checked="${item.isWishlist}"
+                    />
+                  </td>
+                  <td class="cell-center">
+                    <input
+                      type="checkbox"
+                      name="isBucketlist"
+                      value="true"
+                      th:checked="${item.Bucketlist}"
+                    />
+                  </td>
+
+                  <td>
+                    <button type="submit" th:text="#{userlist.button.save}">
+                      Guardar
+                    </button>
+
+                    <button
+                      type="submit"
+                      th:text="#{userlist.button.delete}"
+                      th:formaction="@{/users/{username}/books/{userBookId}/delete(username=${item.username}, userBookId=${item.userBookId})}"
+                      th:onclick="|return confirm(#{userlist.confirm.delete})|"
+                      class="button-danger"
+                    >
+                      Remover
+                    </button>
+                  </td>
+                </form>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

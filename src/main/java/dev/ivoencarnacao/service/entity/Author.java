@@ -1,0 +1,74 @@
+package dev.ivoencarnacao.service.entity;
+
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "authors", schema = "book_tracker")
+public class Author {
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "author_id")
+  private Long id;
+
+  @Column(name = "author_name", nullable = false, length = 255, unique = true)
+  private String name;
+
+  @CreationTimestamp
+  @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP")
+  private OffsetDateTime createdAt;
+
+  @OneToMany(mappedBy = "author", orphanRemoval = true)
+  private Set<BookAuthor> bookAuthors = new HashSet<>();
+
+  protected Author() {
+  }
+
+  public Author(String name) {
+    this.name = name;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public Set<BookAuthor> getBookAuthors() {
+    return bookAuthors;
+  }
+
+  public void setBookAuthors(Set<BookAuthor> bookAuthors) {
+    this.bookAuthors = bookAuthors;
+  }
+
+}

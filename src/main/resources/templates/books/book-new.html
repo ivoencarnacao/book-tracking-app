@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html
+  lang="pt"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="#{form.book.title}">Adicionar um Novo Livro</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  </head>
+  <body>
+    <div>
+      <div th:replace="~{fragments/_header :: page-header}"></div>
+      <main>
+        <h2 th:text="#{form.book.title}">Adicionar um Novo Livro</h2>
+        <form
+          th:action="@{/users/{username}/books(username=${#authentication.name})}"
+          th:object="${bookFormDto}"
+          method="post"
+        >
+          <div>
+            <label for="title" th:text="#{form.book.label.title}">Título:</label
+            ><br />
+            <input type="text" id="title" th:field="*{title}" />
+            <br />
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}"
+            ></span>
+          </div>
+          <br />
+
+          <div>
+            <label for="authorName" th:text="#{form.book.label.author}"
+              >Nome do Autor:</label
+            ><br />
+            <input type="text" id="authorName" th:field="*{authorName}" />
+            <br />
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('authorName')}"
+              th:errors="*{authorName}"
+            ></span>
+          </div>
+          <br />
+
+          <div>
+            <label for="publisherName" th:text="#{form.book.label.publisher}"
+              >Nome da Editora:</label
+            ><br />
+            <input type="text" id="publisherName" th:field="*{publisherName}" />
+            <br />
+            <span
+              class="error"
+              th:if="${#fields.hasErrors('publisherName')}"
+              th:errors="*{publisherName}"
+            ></span>
+          </div>
+          <br />
+
+          <div>
+            <label for="publicationDate" th:text="#{form.book.label.pubdate}"
+              >Data de Publicação (opcional):</label
+            ><br />
+            <input
+              type="date"
+              id="publicationDate"
+              th:field="*{publicationDate}"
+            />
+          </div>
+          <br />
+
+          <div>
+            <button type="submit" th:text="#{form.book.button.save}">
+              Guardar Livro
+            </button>
+          </div>
+        </form>
+      </main>
+    </div>
+  </body>
+</html>

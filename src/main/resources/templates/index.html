@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html
+  lang="pt"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>📚 Book Tracking App</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  </head>
+  <body>
+    <div>
+      <div th:replace="~{fragments/_header :: page-header}"></div>
+      <main>
+        <div sec:authorize="isAuthenticated()">
+          <h2 class="page-greeting">
+            <span th:text="#{home.greeting}">Olá</span>
+            <strong th:text="${#authentication.name}">User name</strong>!
+          </h2>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

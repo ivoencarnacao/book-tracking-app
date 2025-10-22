@@ -1,0 +1,38 @@
+<header
+  th:fragment="page-header"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <div class="header-container">
+    <a th:href="@{/}" class="logo-link">
+      <h1>📚 Book Tracking App</h1>
+    </a>
+
+    <div sec:authorize="isAuthenticated()">
+      <a th:href="@{/books}" th:text="#{nav.allbooks}" class="nav-link"
+        >Todos os Livros</a
+      >
+    </div>
+
+    <div sec:authorize="isAuthenticated()" class="nav-links">
+      <a
+        th:href="@{/users/{username}/books(username=${#authentication.name})}"
+        th:text="#{nav.mybooks}"
+        class="nav-link"
+        >Os Meus Livros</a
+      >
+
+      <a
+        th:href="@{/users/{username}/books/new(username=${#authentication.name})}"
+        th:text="#{nav.addbook}"
+        class="nav-link"
+        >Adicionar Livro</a
+      >
+
+      <form th:action="@{/logout}" method="post" class="logout-form">
+        <button type="submit" th:text="#{nav.logout}">Sair</button>
+      </form>
+    </div>
+  </div>
+  <hr />
+</header>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html
+  lang="pt"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title th:text="#{system.title}">Todos os Livros</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+  </head>
+  <body>
+    <div>
+      <div th:replace="~{fragments/_header :: page-header}"></div>
+      <main>
+        <div th:if="${allBooks == null or #lists.isEmpty(allBooks)}">
+          <h2 th:text="#{system.empty}" class="empty-list-message"></h2>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(allBooks)}">
+          <h2 th:text="#{system.title}" class="page-title">Todos os Livros</h2>
+
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th th:text="#{userlist.header.publisher}">Publisher</th>
+                <th th:text="#{userlist.header.authors}">Author(s)</th>
+                <th th:text="#{userlist.header.title}">Title</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="book : ${allBooks}">
+                <td th:text="${book.publisher.name}"></td>
+                <td
+                  th:text="${#strings.listJoin(book.authors.![name], ', ')}"
+                ></td>
+                <td th:text="${book.title}"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
