@@ -43,8 +43,8 @@ This project is built with a modern, idiomatic Spring Boot 3 stack.
 ### 1. Clone the Repository
 
 ```bash
-git clone [https://github.com/ivoencarnacao/book-tracking-app.git](https://github.com/ivoencarnacao/book-tracking-app.git)
-cd YOUR_REPO
+git clone https://github.com/ivoencarnacao/book-tracking-app.git
+cd book-tracking-app
 ```
 
 ### 2\. Start the Development Environment
