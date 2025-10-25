@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -13,6 +14,7 @@ import dev.ivoencarnacao.book_tracker.config.AbstractIntegrationTest;
 import dev.ivoencarnacao.book_tracker.entity.UserBook;
 
 @DataJpaTest
+@DisplayName("Integration Tests for UserBookRepository")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserBookRepositoryTest extends AbstractIntegrationTest {
 
@@ -20,31 +22,105 @@ public class UserBookRepositoryTest extends AbstractIntegrationTest {
   private UserBookRepository userBookRepository;
 
   @Test
-  void testFindByUsernameWithDetails_ReturnsFetchedData() {
+  @DisplayName("Should return user books with all details (JOIN FETCH) when username exists")
+  void shouldReturnUserBooksWithDetailsWhenUsernameExists() {
 
     String username = "user1";
 
     List<UserBook> userBooks = userBookRepository.findByUsernameWithDetails(username);
 
-    assertThat(userBooks).isNotEmpty();
+    assertThat(userBooks)
+        .as("Query should find books for 'user1' (based on seeds)")
+        .isNotEmpty();
 
-    UserBook firstUserBook = userBooks.get(0);
+    assertThat(userBooks)
+        .as("Book list should contain 'Spring Start Here' (based on seeds)")
+        .extracting(ub -> ub.getBookPublisher().getBook().getTitle())
+        .contains("Spring Start Here");
 
-    assertThat(firstUserBook.getUser().getUsername()).isEqualTo(username);
+    assertThat(userBooks)
+        .as("ALL returned UserBooks should have their associations (Author, Book, Publisher) loaded")
+        .allSatisfy(ub -> {
+          assertThat(ub.getUser())
+              .as("User should not be null")
+              .isNotNull();
+          assertThat(ub.getUser().getUsername())
+              .as("Username should match the requested one")
+              .isEqualTo(username);
 
-    assertThat(firstUserBook.getBookPublisher()).isNotNull();
+          assertThat(ub.getBookPublisher())
+              .as("BookPublisher should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher().getPublisher())
+              .as("Publisher should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher().getPublisher().getName())
+              .as("Publisher name should not be null or blank")
+              .isNotBlank();
 
-    assertThat(firstUserBook.getBookPublisher().getBook().getTitle()).isNotNull();
+          assertThat(ub.getBookPublisher().getBook())
+              .as("Book should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher().getBook().getTitle())
+              .as("Book title should not be null or blank")
+              .isNotBlank();
 
-    assertThat(firstUserBook.getBookPublisher().getBook().getBookAuthors()).isNotEmpty();
+          assertThat(ub.getBookPublisher().getBook().getBookAuthors())
+              .as("BookAuthors collection (LEFT JOIN) should not be null, even if empty")
+              .isNotNull();
+        });
 
-    assertThat(firstUserBook.getBookPublisher().getBook().getBookAuthors()
-        .iterator().next().getAuthor().getName()).isNotNull();
+  }
 
-    boolean hasSpringStartHereBook = userBooks.stream()
-        .anyMatch(ub -> ub.getBookPublisher().getBook().getTitle().equals("Spring Start Here"));
-    assertThat(hasSpringStartHereBook).isTrue();
+  @Test
+  @DisplayName("Should return ALL UserBooks from ALL users with all details (JOIN FETCH)")
+  void shouldReturnAllUserBooksWithDetails() {
 
+    List<UserBook> allUserBooks = userBookRepository.findAllWithDetails();
+
+    assertThat(allUserBooks)
+        .as("Query should find ALL UserBooks in the test database")
+        .isNotEmpty();
+
+    assertThat(allUserBooks)
+        .as("List should contain books from both 'user1' and 'user2' (based on seeds)")
+        .extracting(ub -> ub.getUser().getUsername())
+        .contains("user1", "user2");
+
+    assertThat(allUserBooks)
+        .as("ALL returned UserBooks should have their associations (Author, Book, Publisher) loaded")
+        .allSatisfy(ub -> {
+          assertThat(ub.getUser())
+              .as("User should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher())
+              .as("BookPublisher should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher().getPublisher())
+              .as("Publisher should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher().getBook())
+              .as("Book should not be null")
+              .isNotNull();
+          assertThat(ub.getBookPublisher().getBook().getBookAuthors())
+              .as("BookAuthors collection (LEFT JOIN) should not be null, even if empty")
+              .isNotNull();
+
+        });
+
+  }
+
+  @Test
+  @DisplayName("Should return an empty list when username does not exist")
+  void shouldReturnEmptyListWhenUsernameDoesNotExist() {
+
+    String username = "user3";
+
+    List<UserBook> userBooks = userBookRepository.findByUsernameWithDetails(username);
+
+    assertThat(userBooks)
+        .as("Query should return an empty list for a non-existent user")
+        .isEmpty();
   }
 
 }
