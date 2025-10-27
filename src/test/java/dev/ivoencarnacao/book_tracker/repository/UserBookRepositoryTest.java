@@ -25,9 +25,9 @@ public class UserBookRepositoryTest extends AbstractIntegrationTest {
   @DisplayName("Should return user books with all details (JOIN FETCH) when username exists")
   void shouldReturnUserBooksWithDetailsWhenUsernameExists() {
 
-    String username = "user1";
+    String usernameToFind = "user1";
 
-    List<UserBook> userBooks = userBookRepository.findByUsernameWithDetails(username);
+    List<UserBook> userBooks = userBookRepository.findByUsernameWithDetails(usernameToFind);
 
     assertThat(userBooks)
         .as("Query should find books for 'user1' (based on seeds)")
@@ -46,7 +46,7 @@ public class UserBookRepositoryTest extends AbstractIntegrationTest {
               .isNotNull();
           assertThat(ub.getUser().getUsername())
               .as("Username should match the requested one")
-              .isEqualTo(username);
+              .isEqualTo(usernameToFind);
 
           assertThat(ub.getBookPublisher())
               .as("BookPublisher should not be null")
@@ -68,6 +68,16 @@ public class UserBookRepositoryTest extends AbstractIntegrationTest {
           assertThat(ub.getBookPublisher().getBook().getBookAuthors())
               .as("BookAuthors collection (LEFT JOIN) should not be null, even if empty")
               .isNotNull();
+
+          if (!ub.getBookPublisher().getBook().getBookAuthors().isEmpty()) {
+            assertThat(ub.getBookPublisher().getBook().getBookAuthors().iterator().next().getAuthor())
+                .as("Nested author should be fetched")
+                .isNotNull();
+            assertThat(ub.getBookPublisher().getBook().getBookAuthors().iterator().next().getAuthor().getName())
+                .as("Nested author's name should be loaded")
+                .isNotBlank();
+
+          }
         });
 
   }
@@ -106,6 +116,15 @@ public class UserBookRepositoryTest extends AbstractIntegrationTest {
               .as("BookAuthors collection (LEFT JOIN) should not be null, even if empty")
               .isNotNull();
 
+          if (!ub.getBookPublisher().getBook().getBookAuthors().isEmpty()) {
+            assertThat(ub.getBookPublisher().getBook().getBookAuthors().iterator().next().getAuthor())
+                .as("Nested author should be fetched")
+                .isNotNull();
+            assertThat(ub.getBookPublisher().getBook().getBookAuthors().iterator().next().getAuthor().getName())
+                .as("Nested author's name should be loaded")
+                .isNotBlank();
+
+          }
         });
 
   }
@@ -114,9 +133,9 @@ public class UserBookRepositoryTest extends AbstractIntegrationTest {
   @DisplayName("Should return an empty list when username does not exist")
   void shouldReturnEmptyListWhenUsernameDoesNotExist() {
 
-    String username = "user3";
+    String usernameToFind = "Non-Existing User";
 
-    List<UserBook> userBooks = userBookRepository.findByUsernameWithDetails(username);
+    List<UserBook> userBooks = userBookRepository.findByUsernameWithDetails(usernameToFind);
 
     assertThat(userBooks)
         .as("Query should return an empty list for a non-existent user")
