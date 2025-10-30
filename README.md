@@ -1,7 +1,5 @@
 # 📚 Book Tracking App
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) [![Build Status](https://img.shields.io/badge/Build-Pending-yellow.svg)](https://github.com/ivoencarnacao/book-tracking-app/actions)
-
 A full-stack, monolithic web application built with Spring Boot 3, Spring Security, and Thymeleaf. This application allows users to track their personal book collections, manage wishlists, and mark favorites in a secure, multi-user environment.
 
 ## ✨ Features
