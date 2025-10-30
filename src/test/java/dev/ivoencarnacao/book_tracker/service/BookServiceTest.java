@@ -103,4 +103,39 @@ class BookServiceTest {
 
   }
 
+  @Test
+  @DisplayName("Should find and use existing Author, Publisher and Book when they all exist")
+  void shouldFindAndUseExistingEntitiesWhenTheyExist() {
+
+    when(authorRepository.findByName("New Author")).thenReturn(Optional.of(author));
+    when(publisherRepository.findByName("New Publisher")).thenReturn(Optional.of(publisher));
+
+    when(bookRepository.findByTitleWithDetails("New Title")).thenReturn(Optional.of(book));
+
+    when(bookRepository.save(any(Book.class))).thenReturn(book);
+
+    BookPublisher bookPublisher = bookService.createOrFindBookPublisher(bookFormDto);
+
+    verify(authorRepository,
+        times(0).description("AuthorRepository.save() should NOT be called when author exists"))
+        .save(any(Author.class));
+
+    verify(publisherRepository,
+        times(0).description("PublisherRepository.save() should NOT be called when publisher exists"))
+        .save(any(Publisher.class));
+
+    verify(bookRepository,
+        times(1).description("BookRepository.save() should be called only ONCE (to update associations)"))
+        .save(any(Book.class));
+
+    assertThat(bookPublisher.getBook())
+        .as("The book in bookPublisher should be the existing one")
+        .isEqualTo(book);
+
+    assertThat(bookPublisher.getPublisher())
+        .as("The publisher in bookPublisher should be the existing one")
+        .isEqualTo(publisher);
+
+  }
+
 }
