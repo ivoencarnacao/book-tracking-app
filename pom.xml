@@ -213,6 +213,18 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <!--version>0.8.14</version-->
+
+        <configuration>
+          <excludes>
+            <exclude>dev/ivoencarnacao/book_tracker/Application.class</exclude>
+            <exclude>dev/ivoencarnacao/book_tracker/config/*</exclude>
+            <exclude>dev/ivoencarnacao/book_tracker/entity/*</exclude>
+            <exclude>dev/ivoencarnacao/book_tracker/dto/*</exclude>
+            <exclude>dev/ivoencarnacao/book_tracker/repository/*</exclude>
+            <exclude>dev/ivoencarnacao/book_tracker/mapper/*</exclude>
+          </excludes>
+        </configuration>
+
         <executions>
 
           <execution>
