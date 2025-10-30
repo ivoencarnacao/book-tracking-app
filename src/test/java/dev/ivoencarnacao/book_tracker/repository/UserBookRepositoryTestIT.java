@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import dev.ivoencarnacao.book_tracker.config.AbstractIntegrationTest;
 import dev.ivoencarnacao.book_tracker.entity.UserBook;
@@ -16,7 +17,8 @@ import dev.ivoencarnacao.book_tracker.entity.UserBook;
 @DataJpaTest
 @DisplayName("Integration Tests for UserBookRepository")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserBookRepositoryTest extends AbstractIntegrationTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+public class UserBookRepositoryTestIT extends AbstractIntegrationTest {
 
   @Autowired
   private UserBookRepository userBookRepository;

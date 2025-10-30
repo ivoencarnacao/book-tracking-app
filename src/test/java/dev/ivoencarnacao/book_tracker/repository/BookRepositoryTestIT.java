@@ -10,15 +10,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import dev.ivoencarnacao.book_tracker.config.AbstractIntegrationTest;
 import dev.ivoencarnacao.book_tracker.entity.Book;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @DisplayName("Integration Tests for BookRepository")
-
-public class BookRepositoryTest extends AbstractIntegrationTest {
+public class BookRepositoryTestIT extends AbstractIntegrationTest {
 
   @Autowired
   private BookRepository bookRepository;
