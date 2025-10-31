@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import dev.ivoencarnacao.book_tracker.dto.BookDetailDto;
 import dev.ivoencarnacao.book_tracker.dto.BookFormDto;
 import dev.ivoencarnacao.book_tracker.entity.Author;
 import dev.ivoencarnacao.book_tracker.entity.Book;
@@ -135,6 +137,56 @@ class BookServiceTest {
     assertThat(bookPublisher.getPublisher())
         .as("The publisher in bookPublisher should be the existing one")
         .isEqualTo(publisher);
+
+  }
+
+  @Test
+  @DisplayName("Should return multiple DTOs for a book with multiple publishers")
+  void shouldReturnMultipleDTOsForBookWithMultiplePublishers() {
+
+    Book bookWithTwoPublishers = new Book("Test Book");
+    Publisher publisherA = new Publisher("Publisher A");
+    Publisher publisherB = new Publisher("Publisher B");
+
+    bookWithTwoPublishers.addPublisher(publisherA, LocalDate.now());
+    bookWithTwoPublishers.addPublisher(publisherB, LocalDate.now());
+
+    when(bookRepository.findAllWithDetails()).thenReturn(List.of(bookWithTwoPublishers));
+
+    when(bookMapper.toDto(any(BookPublisher.class))).thenReturn(new BookDetailDto(null, null, null, null));
+
+    List<BookDetailDto> result = bookService.getAllBooks();
+
+    assertThat(result)
+        .as("List should contain 2 DTOs")
+        .hasSize(2);
+
+    verify(bookMapper, times(2).description("The mapper should be called once for each BookPublisher (2 times total)"))
+        .toDto(any(BookPublisher.class));
+
+  }
+
+  @Test
+  @DisplayName("Should set publicationDate to null if DTO is invalid")
+  void shouldSetPublicationDateToNullWhenDateIsInvalid() {
+
+    BookFormDto dtoWithInvalidDate = new BookFormDto(
+        "Title",
+        "Author",
+        "Publisher",
+        "invalid-date");
+
+    when(authorRepository.findByName(any())).thenReturn(Optional.of(author));
+    when(publisherRepository.findByName(any())).thenReturn(Optional.of(publisher));
+    when(bookRepository.findByTitleWithDetails(any())).thenReturn(Optional.of(book));
+
+    when(bookRepository.save(any())).thenReturn(book);
+
+    BookPublisher result = bookService.createOrFindBookPublisher(dtoWithInvalidDate);
+
+    assertThat(result.getPublicationDate())
+        .as("Publication date should be null parser fails")
+        .isNull();
 
   }
 
