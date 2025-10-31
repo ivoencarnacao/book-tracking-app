@@ -2,6 +2,7 @@ package dev.ivoencarnacao.book_tracker.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -187,6 +188,26 @@ class BookServiceTest {
     assertThat(result.getPublicationDate())
         .as("Publication date should be null parser fails")
         .isNull();
+
+  }
+
+  @Test
+  @DisplayName("Should not return a book when it has no publishers")
+  void shouldNotReturnBookWhenItHasNoPublishers() {
+
+    Book bookWithNoPublishers = new Book("Book With No Publishers");
+
+    when(bookRepository.findAllWithDetails()).thenReturn(List.of(bookWithNoPublishers));
+
+    List<BookDetailDto> result = bookService.getAllBooks();
+
+    assertThat(result)
+        .as("The returned list should be empty")
+        .isEmpty();
+
+    verify(bookMapper,
+        never().description("Mapper should never be called if there are no publishers"))
+        .toDto(any(BookPublisher.class));
 
   }
 
