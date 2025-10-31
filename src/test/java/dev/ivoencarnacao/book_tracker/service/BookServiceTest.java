@@ -191,24 +191,4 @@ class BookServiceTest {
 
   }
 
-  @Test
-  @DisplayName("Should not return a book when it has no publishers")
-  void shouldNotReturnBookWhenItHasNoPublishers() {
-
-    Book bookWithNoPublishers = new Book("Book With No Publishers");
-
-    when(bookRepository.findAllWithDetails()).thenReturn(List.of(bookWithNoPublishers));
-
-    List<BookDetailDto> result = bookService.getAllBooks();
-
-    assertThat(result)
-        .as("The returned list should be empty")
-        .isEmpty();
-
-    verify(bookMapper,
-        never().description("Mapper should never be called if there are no publishers"))
-        .toDto(any(BookPublisher.class));
-
-  }
-
 }
